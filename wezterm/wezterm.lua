@@ -3,9 +3,15 @@ local act = wezterm.action
 
 local config = wezterm.config_builder()
 
--- Use PowerShell 7 as the default shell on Windows.
+-- Use the preferred native shell on each platform.
 if wezterm.target_triple:find("windows") then
     config.default_prog = { "pwsh.exe", "-NoLogo" }
+elseif wezterm.target_triple:find("linux") then
+    local zsh = io.open("/usr/bin/zsh", "r")
+    if zsh then
+        zsh:close()
+        config.default_prog = { "/usr/bin/zsh", "-l" }
+    end
 end
 
 -- Start each newly launched GUI instance maximized.

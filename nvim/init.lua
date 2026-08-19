@@ -69,8 +69,8 @@ if vim.fn.has("win32") == 1 then
         vim.opt.shellredir = "2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode"
         vim.opt.shellpipe = "2>&1 | Tee-Object %s; exit $LastExitCode"
     end
-elseif vim.fn.has("unix") == 1 and vim.fn.executable("bash") == 1 then
-    vim.opt.shell = "bash"
+elseif vim.fn.has("unix") == 1 and vim.fn.executable("zsh") == 1 then
+    vim.opt.shell = "zsh"
     vim.opt.shellcmdflag = "-c"
 end
 

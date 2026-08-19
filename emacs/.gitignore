@@ -1,0 +1,25 @@
+# Paquetes instalados y artefactos compilados
+/elpa/
+/eln-cache/
+*.elc
+*.eln
+
+# Estado local de Emacs y de sus paquetes
+/auto-save-list/
+/agent/
+/persist/
+/transient/
+/projects
+/tramp
+/recentf
+/bookmarks
+/history
+/places
+/.emacs.desktop*
+/network-security.data
+/package-quickstart.el
+
+# Copias de seguridad y archivos de auto-guardado
+*~
+\#*\#
+.#*
