@@ -97,13 +97,16 @@ end)
 -- Basics
 -- --------------------------------------------------
 
--- Ghostty's bundled default font. TeX Live provides the complete family here.
-config.font_dirs = {
-    "/usr/share/texlive/texmf-dist/fonts/opentype/SIL/jetbrainsmono-otf",
-}
-config.font = wezterm.font("JetBrains Mono", { weight = "Regular" })
+-- JetBrains Mono and the Nerd Font symbols are bundled with WezTerm, so this
+-- works on both Linux and Windows without relying on a system-specific path.
+config.font = wezterm.font_with_fallback({
+    { family = "JetBrains Mono", weight = "Regular" },
+})
 config.font_size = 14.0
 config.line_height = 1.08
+
+-- Avoid cursor reappearance issues seen after typing under GNOME/Wayland.
+config.hide_mouse_cursor_when_typing = false
 
 -- A restrained dark theme with clear syntax colors and comfortable contrast.
 config.color_scheme = "Catppuccin Mocha"

@@ -1,5 +1,5 @@
 -- Bootstrap lazy.nvim
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+local lazypath = vim.fs.joinpath(vim.fn.stdpath("data"), "lazy", "lazy.nvim")
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
     local lazyrepo = "https://github.com/folke/lazy.nvim.git"
     local out = vim.fn.system({
@@ -31,7 +31,15 @@ vim.g.loaded_ruby_provider = 0
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.clipboard = "unnamedplus"
-vim.o.guifont = "JetBrainsMono Nerd Font:h14"
+-- GUI clients use the first installed font in this portable fallback list.
+vim.o.guifont = table.concat({
+    "JetBrainsMono Nerd Font:h14",
+    "JetBrains Mono:h14",
+    "Cascadia Code:h14",
+    "Cascadia Mono:h14",
+    "Consolas:h14",
+    "DejaVu Sans Mono:h14",
+}, ",")
 vim.opt.cursorline = true
 vim.opt.signcolumn = "yes"
 vim.opt.termguicolors = true
@@ -48,13 +56,20 @@ vim.opt.confirm = true
 
 -- Shell según el sistema operativo
 if vim.fn.has("win32") == 1 then
-    vim.opt.shell = "pwsh"
-    vim.opt.shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command"
-    vim.opt.shellquote = ""
-    vim.opt.shellxquote = ""
-    vim.opt.shellredir = "2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode"
-    vim.opt.shellpipe = "2>&1 | Tee-Object %s; exit $LastExitCode"
-elseif vim.fn.has("unix") == 1 then
+    local powershell = vim.fn.executable("pwsh") == 1 and "pwsh"
+        or vim.fn.executable("powershell") == 1 and "powershell"
+        or nil
+
+    -- Keep Neovim's COMSPEC default when PowerShell is not installed.
+    if powershell then
+        vim.opt.shell = powershell
+        vim.opt.shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command"
+        vim.opt.shellquote = ""
+        vim.opt.shellxquote = ""
+        vim.opt.shellredir = "2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode"
+        vim.opt.shellpipe = "2>&1 | Tee-Object %s; exit $LastExitCode"
+    end
+elseif vim.fn.has("unix") == 1 and vim.fn.executable("bash") == 1 then
     vim.opt.shell = "bash"
     vim.opt.shellcmdflag = "-c"
 end
@@ -346,7 +361,15 @@ require("lazy").setup({
         {
             "iamcco/markdown-preview.nvim",
             cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
-            build = "cd app && npm install",
+            build = function(plugin)
+                local result = vim.system(
+                    { "npm", "install" },
+                    { cwd = vim.fs.joinpath(plugin.dir, "app") }
+                ):wait()
+                if result.code ~= 0 then
+                    error(result.stderr)
+                end
+            end,
             init = function()
                 vim.g.mkdp_filetypes = { "markdown" }
             end,
@@ -359,8 +382,18 @@ require("lazy").setup({
             init = function()
                 vim.g.vimtex_compiler_method = "latexmk"
                 vim.g.vimtex_view_method = "general"
-                vim.g.vimtex_view_general_viewer = "xdg-open"
-                vim.g.vimtex_view_general_options = "@pdf"
+                if vim.fn.has("win32") == 1 then
+                    if vim.fn.executable("SumatraPDF") == 1 then
+                        vim.g.vimtex_view_general_viewer = "SumatraPDF"
+                        vim.g.vimtex_view_general_options = "-reuse-instance @pdf"
+                    else
+                        vim.g.vimtex_view_general_viewer = "cmd"
+                        vim.g.vimtex_view_general_options = '/c start "" @pdf'
+                    end
+                elseif vim.fn.executable("xdg-open") == 1 then
+                    vim.g.vimtex_view_general_viewer = "xdg-open"
+                    vim.g.vimtex_view_general_options = "@pdf"
+                end
             end,
         },
     },
