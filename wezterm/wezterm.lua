@@ -3,6 +3,11 @@ local act = wezterm.action
 
 local config = wezterm.config_builder()
 
+-- Use PowerShell 7 as the default shell on Windows.
+if wezterm.target_triple:find("windows") then
+    config.default_prog = { "pwsh.exe", "-NoLogo" }
+end
+
 -- Start each newly launched GUI instance maximized.
 wezterm.on("gui-startup", function(cmd)
     local _, _, window = wezterm.mux.spawn_window(cmd or {})
