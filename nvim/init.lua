@@ -385,6 +385,11 @@ local function current_buffer_dir()
     return vim.fn.getcwd()
 end
 
+local function project_root()
+    local buffer_dir = current_buffer_dir()
+    return vim.fs.root(buffer_dir, { ".git" }) or buffer_dir
+end
+
 --General
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 vim.keymap.set("n", "<leader>t", function()
@@ -395,12 +400,12 @@ vim.keymap.set("t", "<Esc><Esc>", [[<C-\><C-n>]], { desc = "Exit terminal mode" 
 
 -- Fzf
 vim.keymap.set("n", "<leader><leader>", function()
-    require("fzf-lua").files({ cwd = current_buffer_dir() })
-end)
+    require("fzf-lua").files({ cwd = project_root() })
+end, { desc = "Find files from project root" })
 
 vim.keymap.set("n", "<leader>/", function()
-    require("fzf-lua").live_grep({ cwd = current_buffer_dir() })
-end)
+    require("fzf-lua").live_grep({ cwd = project_root() })
+end, { desc = "Grep from project root" })
 
 vim.keymap.set("n", "<leader>b", function()
     require("fzf-lua").buffers()
