@@ -108,19 +108,21 @@ end)
 -- Basics
 -- --------------------------------------------------
 
--- JetBrains Mono and the Nerd Font symbols are bundled with WezTerm, so this
--- works on both Linux and Windows without relying on a system-specific path.
 config.font = wezterm.font_with_fallback({
-    { family = "JetBrains Mono", weight = "Regular" },
+    { family = "Iosevka Term", weight = "Regular" },
 })
 config.font_size = 14.0
 config.line_height = 1.08
 
+-- Suppress desktop notifications and terminal bell sounds.
+config.notification_handling = "NeverShow"
+config.audible_bell = "Disabled"
+
 -- Avoid cursor reappearance issues seen after typing under GNOME/Wayland.
 config.hide_mouse_cursor_when_typing = false
 
--- A restrained dark theme with clear syntax colors and comfortable contrast.
-config.color_scheme = "Catppuccin Mocha"
+-- Modus Vivendi's high-contrast dark theme.
+config.color_scheme = "Modus-Vivendi"
 
 -- Use a compact tmux-like tab bar along the bottom of the window.
 config.use_fancy_tab_bar = false

@@ -31,16 +31,8 @@ vim.g.loaded_ruby_provider = 0
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.clipboard = "unnamedplus"
--- GUI clients use the first installed font in this portable fallback list.
-vim.o.guifont = table.concat({
-    "JetBrainsMono Nerd Font:h14",
-    "JetBrains Mono:h14",
-    "Cascadia Code:h14",
-    "Cascadia Mono:h14",
-    "Consolas:h14",
-    "DejaVu Sans Mono:h14",
-}, ",")
-vim.opt.cursorline = true
+vim.o.guifont = "Iosevka Term:h14"
+vim.opt.cursorline = false
 vim.opt.signcolumn = "yes"
 vim.opt.termguicolors = true
 vim.opt.ignorecase = true
@@ -182,59 +174,18 @@ require("lazy").setup({
             end,
         },
         {
-            "rose-pine/neovim",
-            name = "rose-pine",
+            "miikanissi/modus-themes.nvim",
             lazy = false,
             priority = 1000,
             config = function()
-                require("rose-pine").setup({
-                    variant = "main",
-                    dark_variant = "main",
+                require("modus-themes").setup({
+                    style = "modus_vivendi",
                     styles = {
-                        bold = false,
-                        italic = true,
-                        transparency = false,
-                    },
-                    highlight_groups = {
-                        Comment = { fg = "muted", italic = true },
-                        Identifier = { fg = "text" },
-                        Function = { fg = "text" },
-                        Operator = { fg = "subtle" },
-                        Keyword = { fg = "iris", bold = true },
-                        Type = { fg = "foam" },
-                        String = { fg = "gold" },
-                        Constant = { fg = "gold" },
-
-                        ["@variable"] = { fg = "text" },
-                        ["@variable.member"] = { fg = "text" },
-                        ["@variable.parameter"] = { fg = "text" },
-                        ["@property"] = { fg = "text" },
-                        ["@function"] = { fg = "text" },
-                        ["@function.call"] = { fg = "text" },
-                        ["@function.method"] = { fg = "text" },
-                        ["@function.method.call"] = { fg = "text" },
-                        ["@module"] = { fg = "text" },
-                        ["@operator"] = { fg = "subtle" },
-                        ["@punctuation"] = { fg = "subtle" },
-                        ["@keyword"] = { fg = "iris", bold = true },
-                        ["@type"] = { fg = "foam" },
-                        ["@string"] = { fg = "gold" },
-                        ["@constant"] = { fg = "gold" },
-                        ["@number"] = { fg = "gold" },
-                        ["@boolean"] = { fg = "gold" },
-                        ["@comment"] = { fg = "muted", italic = true },
-
-                        ["@lsp.type.variable"] = { fg = "text" },
-                        ["@lsp.type.parameter"] = { fg = "text" },
-                        ["@lsp.type.property"] = { fg = "text" },
-                        ["@lsp.type.function"] = { fg = "text" },
-                        ["@lsp.type.method"] = { fg = "text" },
-                        ["@lsp.type.class"] = { fg = "foam" },
-                        ["@lsp.type.interface"] = { fg = "foam" },
-                        ["@lsp.type.type"] = { fg = "foam" },
+                        comments = { italic = false },
+                        keywords = { italic = false },
                     },
                 })
-                vim.cmd.colorscheme("rose-pine")
+                vim.cmd.colorscheme("modus_vivendi")
             end,
         },
         {
@@ -398,7 +349,7 @@ require("lazy").setup({
         },
     },
     -- Colorscheme
-    install = { colorscheme = { "rose-pine" } },
+    install = { colorscheme = { "modus_vivendi" } },
     -- automatically check for plugin updates
     checker = { enabled = true },
     rocks = { enabled = false },
