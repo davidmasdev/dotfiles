@@ -264,6 +264,7 @@ require("lazy").setup({
                 "hrsh7th/cmp-nvim-lsp",     -- LSP source
                 "hrsh7th/cmp-buffer",       -- Buffer words
                 "hrsh7th/cmp-path",         -- File paths
+                "hrsh7th/cmp-cmdline",      -- Command-line completion
                 "L3MON4D3/LuaSnip",         -- Snippet engine (required)
                 "saadparwaiz1/cmp_luasnip", -- Snippet source
             },
@@ -305,6 +306,20 @@ require("lazy").setup({
                         { name = "luasnip" },
                         { name = "buffer" },
                         { name = "path" },
+                    }),
+                })
+
+                cmp.setup.cmdline(":", {
+                    mapping = cmp.mapping.preset.cmdline(),
+                    sources = cmp.config.sources({
+                        { name = "path" },
+                    }, {
+                        {
+                            name = "cmdline",
+                            option = {
+                                ignore_cmds = { "Man", "!" },
+                            },
+                        },
                     }),
                 })
             end,
