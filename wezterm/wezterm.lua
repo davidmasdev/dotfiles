@@ -131,53 +131,53 @@ config.tab_max_width = 28
 config.status_update_interval = 1000
 config.colors = {
     tab_bar = {
-        background = "#181825",
+        background = "#000000",
         active_tab = {
-            bg_color = "#313244",
-            fg_color = "#cdd6f4",
+            bg_color = "#535353",
+            fg_color = "#ffffff",
             intensity = "Bold",
         },
         inactive_tab = {
-            bg_color = "#1e1e2e",
-            fg_color = "#a6adc8",
+            bg_color = "#1e1e1e",
+            fg_color = "#989898",
         },
         inactive_tab_hover = {
-            bg_color = "#45475a",
-            fg_color = "#cdd6f4",
+            bg_color = "#303030",
+            fg_color = "#ffffff",
         },
         new_tab = {
-            bg_color = "#181825",
-            fg_color = "#a6adc8",
+            bg_color = "#000000",
+            fg_color = "#989898",
         },
         new_tab_hover = {
-            bg_color = "#45475a",
-            fg_color = "#cdd6f4",
+            bg_color = "#303030",
+            fg_color = "#ffffff",
         },
     },
 }
 config.window_frame = {
-    font = wezterm.font("JetBrains Mono", { weight = "Regular" }),
+    font = wezterm.font("Iosevka Term", { weight = "Regular" }),
     font_size = 11.0,
-    active_titlebar_bg = "#1e1e2e",
-    inactive_titlebar_bg = "#181825",
-    active_titlebar_fg = "#cdd6f4",
-    inactive_titlebar_fg = "#7f849c",
-    active_titlebar_border_bottom = "#313244",
-    inactive_titlebar_border_bottom = "#181825",
-    button_fg = "#cdd6f4",
-    button_bg = "#1e1e2e",
-    button_hover_fg = "#11111b",
-    button_hover_bg = "#cba6f7",
+    active_titlebar_bg = "#1e1e1e",
+    inactive_titlebar_bg = "#000000",
+    active_titlebar_fg = "#ffffff",
+    inactive_titlebar_fg = "#989898",
+    active_titlebar_border_bottom = "#535353",
+    inactive_titlebar_border_bottom = "#000000",
+    button_fg = "#ffffff",
+    button_bg = "#1e1e1e",
+    button_hover_fg = "#000000",
+    button_hover_bg = "#f78fe7",
 }
 
 -- Use native window chrome so the desktop can provide its title bar and,
 -- where supported by the compositor, rounded window corners.
 config.window_decorations = "TITLE | RESIZE"
 config.window_padding = {
-    left = 14,
-    right = 14,
-    top = 12,
-    bottom = 12,
+    left = 0,
+    right = 0,
+    top = 0,
+    bottom = 0,
 }
 config.use_resize_increments = false
 config.enable_scroll_bar = false
