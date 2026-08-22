@@ -18,6 +18,7 @@
   "nvim-lspconfig": { "branch": "master", "commit": "3addf05a791ea256c36438220aced91c03071712" },
   "nvim-treesitter": { "branch": "main", "commit": "493890b87a81dfe6a7e577dbc364ae33fa482da9" },
   "nvim-web-devicons": { "branch": "master", "commit": "d7462543c9e366c0d196c7f67a945eaaf5d99414" },
+  "obsidian.nvim": { "branch": "main", "commit": "69fe7c6bf61a5222b5061a9a9dfc5023f2ec0fdc" },
   "oil.nvim": { "branch": "master", "commit": "b73018b75affd13fa38e2fc94ef753b465f770d7" },
   "vimtex": { "branch": "master", "commit": "2e1bbabeb2c34bb17d7bc8cfdf8f95b16dd0db0c" }
 }
