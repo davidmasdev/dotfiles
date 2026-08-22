@@ -342,6 +342,63 @@ require("lazy").setup({
             ft = { "markdown" },
         },
         {
+            "MeanderingProgrammer/render-markdown.nvim",
+            ft = { "markdown" },
+            dependencies = { "nvim-treesitter/nvim-treesitter" },
+            opts = {},
+            keys = {
+                {
+                    "<leader>mr",
+                    "<cmd>RenderMarkdown toggle<cr>",
+                    desc = "Toggle Markdown rendering",
+                },
+            },
+        },
+        {
+            "dhruvasagar/vim-table-mode",
+            ft = { "markdown" },
+            init = function()
+                vim.g.table_mode_map_prefix = "<localleader>t"
+                vim.g.table_mode_disable_tableize_mappings = 1
+            end,
+            keys = {
+                {
+                    "<leader>mt",
+                    "<cmd>TableModeToggle<cr>",
+                    desc = "Toggle Markdown table mode",
+                },
+                {
+                    "<leader>ma",
+                    "<cmd>TableModeRealign<cr>",
+                    desc = "Realign Markdown table",
+                },
+            },
+        },
+        {
+            "obsidian-nvim/obsidian.nvim",
+            version = "*",
+            ft = { "markdown" },
+            cmd = { "Obsidian" },
+            dependencies = { "ibhagwan/fzf-lua" },
+            opts = {
+                legacy_commands = false,
+                workspaces = {
+                    {
+                        name = "notes",
+                        path = vim.env.OBSIDIAN_VAULT or vim.fn.expand("~/notas"),
+                    },
+                },
+                picker = {
+                    name = "fzf-lua",
+                },
+            },
+            keys = {
+                { "<leader>on", "<cmd>Obsidian new<cr>", desc = "New Obsidian note" },
+                { "<leader>oq", "<cmd>Obsidian quick_switch<cr>", desc = "Find Obsidian note" },
+                { "<leader>os", "<cmd>Obsidian search<cr>", desc = "Search Obsidian notes" },
+            },
+        },
+        {
             "lervag/vimtex",
             tag = "v2.17",
             lazy = false,
