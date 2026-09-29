@@ -422,8 +422,8 @@ require("lazy").setup({
     },
     -- Colorscheme
     install = { colorscheme = { "modus_vivendi" } },
-    -- automatically check for plugin updates
-    checker = { enabled = true },
+    -- do not automatically check for plugin updates
+    checker = { enabled = false },
     rocks = { enabled = false },
 })
 

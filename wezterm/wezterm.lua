@@ -14,12 +14,6 @@ elseif wezterm.target_triple:find("linux") then
     end
 end
 
--- Start each newly launched GUI instance maximized.
-wezterm.on("gui-startup", function(cmd)
-    local _, _, window = wezterm.mux.spawn_window(cmd or {})
-    window:gui_window():maximize()
-end)
-
 -- Show a tmux-style clock and date at the right of the tab bar.
 wezterm.on("update-right-status", function(window)
     window:set_right_status(wezterm.strftime(" %H:%M  %a %d %b %Y "))
@@ -111,7 +105,7 @@ end)
 config.font = wezterm.font_with_fallback({
     { family = "Iosevka Term", weight = "Regular" },
 })
-config.font_size = 14.0
+config.font_size = 18.0
 config.line_height = 1.08
 
 -- Suppress desktop notifications and terminal bell sounds.
