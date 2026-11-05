@@ -5,107 +5,104 @@ local config = wezterm.config_builder()
 
 -- Use the preferred native shell on each platform.
 if wezterm.target_triple:find("windows") then
-    config.default_prog = { "pwsh.exe", "-NoLogo" }
+	config.default_prog = { "pwsh.exe", "-NoLogo" }
 elseif wezterm.target_triple:find("linux") then
-    local zsh = io.open("/usr/bin/zsh", "r")
-    if zsh then
-        zsh:close()
-        config.default_prog = { "/usr/bin/zsh", "-l" }
-    end
+	local zsh = io.open("/usr/bin/zsh", "r")
+	if zsh then
+		zsh:close()
+		config.default_prog = { "/usr/bin/zsh", "-l" }
+	end
 end
 
 -- Show a tmux-style clock and date at the right of the tab bar.
 wezterm.on("update-right-status", function(window)
-    window:set_right_status(wezterm.strftime(" %H:%M  %a %d %b %Y "))
+	window:set_right_status(wezterm.strftime(" %H:%M  %a %d %b %Y "))
 end)
 
 -- Keep tab labels concise: prefer an explicit title, then the active process title.
 wezterm.on("format-tab-title", function(tab, _, _, _, _, max_width)
-    local title = tab.tab_title
-    if not title or #title == 0 then
-        title = tab.active_pane.title
-    end
+	local title = tab.tab_title
+	if not title or #title == 0 then
+		title = tab.active_pane.title
+	end
 
-    local prefix = string.format(" %d  ", tab.tab_index + 1)
-    local available = math.max(1, max_width - #prefix - 1)
-    if #title > available then
-        title = title:sub(1, available - 1) .. "…"
-    end
+	local prefix = string.format(" %d  ", tab.tab_index + 1)
+	local available = math.max(1, max_width - #prefix - 1)
+	if #title > available then
+		title = title:sub(1, available - 1) .. "…"
+	end
 
-    return prefix .. title .. " "
+	return prefix .. title .. " "
 end)
 
 -- Restore panes to evenly balanced sizes along the requested axis.
 local function balance_panes(axis, window, pane)
-    local tab = window:active_tab()
-    local original_pane_id = pane:pane_id()
-    local previous_direction = axis == "x" and "Left" or "Up"
-    local next_direction = axis == "x" and "Right" or "Down"
-    local size_key = axis == "x" and "cols" or "viewport_rows"
-    local tab_size_key = axis == "x" and "cols" or "rows"
-    local panes = { pane }
-    local visited = { [original_pane_id] = true }
+	local tab = window:active_tab()
+	local original_pane_id = pane:pane_id()
+	local previous_direction = axis == "x" and "Left" or "Up"
+	local next_direction = axis == "x" and "Right" or "Down"
+	local size_key = axis == "x" and "cols" or "viewport_rows"
+	local tab_size_key = axis == "x" and "cols" or "rows"
+	local panes = { pane }
+	local visited = { [original_pane_id] = true }
 
-    for _, direction in ipairs({ previous_direction, next_direction }) do
-        pane:activate()
+	for _, direction in ipairs({ previous_direction, next_direction }) do
+		pane:activate()
 
-        while true do
-            local current = tab:active_pane()
-            window:perform_action(act.ActivatePaneDirection(direction), current)
+		while true do
+			local current = tab:active_pane()
+			window:perform_action(act.ActivatePaneDirection(direction), current)
 
-            local adjacent = tab:active_pane()
-            local adjacent_id = adjacent:pane_id()
-            if adjacent_id == current:pane_id() or visited[adjacent_id] then
-                break
-            end
+			local adjacent = tab:active_pane()
+			local adjacent_id = adjacent:pane_id()
+			if adjacent_id == current:pane_id() or visited[adjacent_id] then
+				break
+			end
 
-            visited[adjacent_id] = true
-            table.insert(panes, adjacent)
-        end
-    end
+			visited[adjacent_id] = true
+			table.insert(panes, adjacent)
+		end
+	end
 
-    local target_size = math.floor(tab:get_size()[tab_size_key] / #panes)
-    for _, sibling in ipairs(panes) do
-        local adjustment = sibling:get_dimensions()[size_key] - target_size
-        if adjustment ~= 0 then
-            local direction = adjustment < 0 and next_direction or previous_direction
-            window:perform_action(
-                act.AdjustPaneSize({ direction, math.abs(adjustment) }),
-                sibling
-            )
-        end
-    end
+	local target_size = math.floor(tab:get_size()[tab_size_key] / #panes)
+	for _, sibling in ipairs(panes) do
+		local adjustment = sibling:get_dimensions()[size_key] - target_size
+		if adjustment ~= 0 then
+			local direction = adjustment < 0 and next_direction or previous_direction
+			window:perform_action(act.AdjustPaneSize({ direction, math.abs(adjustment) }), sibling)
+		end
+	end
 
-    pane:activate()
+	pane:activate()
 end
 
 local function reset_pane_sizes(window, pane)
-    balance_panes("x", window, pane)
-    balance_panes("y", window, pane)
+	balance_panes("x", window, pane)
+	balance_panes("y", window, pane)
 end
 
 -- Open new tabs in the active pane's current working directory.
 local spawn_tab_in_current_directory = wezterm.action_callback(function(window, pane)
-    local cwd_url = pane:get_current_working_dir()
-    local cwd = cwd_url and cwd_url.file_path or nil
+	local cwd_url = pane:get_current_working_dir()
+	local cwd = cwd_url and cwd_url.file_path or nil
 
-    window:perform_action(
-        act.SpawnCommandInNewTab {
-            domain = "CurrentPaneDomain",
-            cwd = cwd,
-        },
-        pane
-    )
+	window:perform_action(
+		act.SpawnCommandInNewTab({
+			domain = "CurrentPaneDomain",
+			cwd = cwd,
+		}),
+		pane
+	)
 end)
 
 -- --------------------------------------------------
 -- Basics
 -- --------------------------------------------------
 
-config.font = wezterm.font_with_fallback({
-    { family = "Iosevka Term", weight = "Regular" },
-})
-config.font_size = 18.0
+-- config.font = wezterm.font_with_fallback({
+-- { family = "Iosevka Term", weight = "Regular" },
+-- })
+config.font_size = 14.0
 config.line_height = 1.08
 
 -- Suppress desktop notifications and terminal bell sounds.
@@ -115,8 +112,20 @@ config.audible_bell = "Disabled"
 -- Avoid cursor reappearance issues seen after typing under GNOME/Wayland.
 config.hide_mouse_cursor_when_typing = false
 
--- Modus Vivendi's high-contrast dark theme.
-config.color_scheme = "Modus-Vivendi"
+-- Nord's arctic, north-bluish dark theme.
+config.color_scheme = "nord"
+
+-- Nord palette used for the tab bar and window frame.
+local nord = {
+	nord0 = "#2E3440",
+	nord1 = "#3B4252",
+	nord2 = "#434C5E",
+	nord3 = "#4C566A",
+	nord3_bright = "#616E88",
+	nord4 = "#D8DEE9",
+	nord6 = "#ECEFF4",
+	nord8 = "#88C0D0",
+}
 
 -- Use a compact tmux-like tab bar along the bottom of the window.
 config.use_fancy_tab_bar = false
@@ -126,54 +135,54 @@ config.show_new_tab_button_in_tab_bar = false
 config.tab_max_width = 28
 config.status_update_interval = 1000
 config.colors = {
-    tab_bar = {
-        background = "#000000",
-        active_tab = {
-            bg_color = "#535353",
-            fg_color = "#ffffff",
-            intensity = "Bold",
-        },
-        inactive_tab = {
-            bg_color = "#1e1e1e",
-            fg_color = "#989898",
-        },
-        inactive_tab_hover = {
-            bg_color = "#303030",
-            fg_color = "#ffffff",
-        },
-        new_tab = {
-            bg_color = "#000000",
-            fg_color = "#989898",
-        },
-        new_tab_hover = {
-            bg_color = "#303030",
-            fg_color = "#ffffff",
-        },
-    },
+	tab_bar = {
+		background = nord.nord0,
+		active_tab = {
+			bg_color = nord.nord3,
+			fg_color = nord.nord6,
+			intensity = "Bold",
+		},
+		inactive_tab = {
+			bg_color = nord.nord1,
+			fg_color = nord.nord3_bright,
+		},
+		inactive_tab_hover = {
+			bg_color = nord.nord2,
+			fg_color = nord.nord6,
+		},
+		new_tab = {
+			bg_color = nord.nord0,
+			fg_color = nord.nord3_bright,
+		},
+		new_tab_hover = {
+			bg_color = nord.nord2,
+			fg_color = nord.nord6,
+		},
+	},
 }
 config.window_frame = {
-    font = wezterm.font("Iosevka Term", { weight = "Regular" }),
-    font_size = 11.0,
-    active_titlebar_bg = "#1e1e1e",
-    inactive_titlebar_bg = "#000000",
-    active_titlebar_fg = "#ffffff",
-    inactive_titlebar_fg = "#989898",
-    active_titlebar_border_bottom = "#535353",
-    inactive_titlebar_border_bottom = "#000000",
-    button_fg = "#ffffff",
-    button_bg = "#1e1e1e",
-    button_hover_fg = "#000000",
-    button_hover_bg = "#f78fe7",
+	font = wezterm.font("Iosevka Term", { weight = "Regular" }),
+	font_size = 11.0,
+	active_titlebar_bg = nord.nord1,
+	inactive_titlebar_bg = nord.nord0,
+	active_titlebar_fg = nord.nord6,
+	inactive_titlebar_fg = nord.nord3_bright,
+	active_titlebar_border_bottom = nord.nord3,
+	inactive_titlebar_border_bottom = nord.nord0,
+	button_fg = nord.nord4,
+	button_bg = nord.nord1,
+	button_hover_fg = nord.nord0,
+	button_hover_bg = nord.nord8,
 }
 
 -- Use native window chrome so the desktop can provide its title bar and,
 -- where supported by the compositor, rounded window corners.
 config.window_decorations = "TITLE | RESIZE"
 config.window_padding = {
-    left = 0,
-    right = 0,
-    top = 0,
-    bottom = 0,
+	left = 0,
+	right = 0,
+	top = 0,
+	bottom = 0,
 }
 config.use_resize_increments = false
 config.enable_scroll_bar = false
@@ -196,177 +205,177 @@ config.window_close_confirmation = "NeverPrompt"
 --   Ctrl-a z    -> zoom pane
 --
 config.leader = {
-    key = "a",
-    mods = "CTRL",
-    timeout_milliseconds = 1000,
+	key = "a",
+	mods = "CTRL",
+	timeout_milliseconds = 1000,
 }
 
 config.keys = {
-    -- Ctrl-a Ctrl-a sends a real Ctrl-a to the shell/program
-    {
-        key = "a",
-        mods = "LEADER|CTRL",
-        action = act.SendKey {
-            key = "a",
-            mods = "CTRL",
-        },
-    },
+	-- Ctrl-a Ctrl-a sends a real Ctrl-a to the shell/program
+	{
+		key = "a",
+		mods = "LEADER|CTRL",
+		action = act.SendKey({
+			key = "a",
+			mods = "CTRL",
+		}),
+	},
 
-    -- ------------------------------------------------
-    -- Vim-style pane navigation
-    -- ------------------------------------------------
+	-- ------------------------------------------------
+	-- Vim-style pane navigation
+	-- ------------------------------------------------
 
-    {
-        key = "h",
-        mods = "LEADER",
-        action = act.ActivatePaneDirection("Left"),
-    },
-    {
-        key = "j",
-        mods = "LEADER",
-        action = act.ActivatePaneDirection("Down"),
-    },
-    {
-        key = "k",
-        mods = "LEADER",
-        action = act.ActivatePaneDirection("Up"),
-    },
-    {
-        key = "l",
-        mods = "LEADER",
-        action = act.ActivatePaneDirection("Right"),
-    },
+	{
+		key = "h",
+		mods = "LEADER",
+		action = act.ActivatePaneDirection("Left"),
+	},
+	{
+		key = "j",
+		mods = "LEADER",
+		action = act.ActivatePaneDirection("Down"),
+	},
+	{
+		key = "k",
+		mods = "LEADER",
+		action = act.ActivatePaneDirection("Up"),
+	},
+	{
+		key = "l",
+		mods = "LEADER",
+		action = act.ActivatePaneDirection("Right"),
+	},
 
-    -- ------------------------------------------------
-    -- Splits
-    -- ------------------------------------------------
+	-- ------------------------------------------------
+	-- Splits
+	-- ------------------------------------------------
 
-    -- Ctrl-a \ -> split left/right
-    {
-        key = "v",
-        mods = "LEADER",
-        action = act.SplitHorizontal {
-            domain = "CurrentPaneDomain",
-        },
-    },
+	-- Ctrl-a \ -> split left/right
+	{
+		key = "v",
+		mods = "LEADER",
+		action = act.SplitHorizontal({
+			domain = "CurrentPaneDomain",
+		}),
+	},
 
-    -- Ctrl-a - -> split top/bottom
-    {
-        key = "s",
-        mods = "LEADER",
-        action = act.SplitVertical {
-            domain = "CurrentPaneDomain",
-        },
-    },
+	-- Ctrl-a - -> split top/bottom
+	{
+		key = "s",
+		mods = "LEADER",
+		action = act.SplitVertical({
+			domain = "CurrentPaneDomain",
+		}),
+	},
 
-    -- ------------------------------------------------
-    -- Resize panes
-    --
-    -- Upper-case H/J/K/L
-    -- ------------------------------------------------
+	-- ------------------------------------------------
+	-- Resize panes
+	--
+	-- Upper-case H/J/K/L
+	-- ------------------------------------------------
 
-    {
-        key = "H",
-        mods = "LEADER",
-        action = act.AdjustPaneSize({ "Left", 10 }),
-    },
-    {
-        key = "J",
-        mods = "LEADER",
-        action = act.AdjustPaneSize({ "Down", 10 }),
-    },
-    {
-        key = "K",
-        mods = "LEADER",
-        action = act.AdjustPaneSize({ "Up", 10 }),
-    },
-    {
-        key = "L",
-        mods = "LEADER",
-        action = act.AdjustPaneSize({ "Right", 10 }),
-    },
+	{
+		key = "H",
+		mods = "LEADER",
+		action = act.AdjustPaneSize({ "Left", 10 }),
+	},
+	{
+		key = "J",
+		mods = "LEADER",
+		action = act.AdjustPaneSize({ "Down", 10 }),
+	},
+	{
+		key = "K",
+		mods = "LEADER",
+		action = act.AdjustPaneSize({ "Up", 10 }),
+	},
+	{
+		key = "L",
+		mods = "LEADER",
+		action = act.AdjustPaneSize({ "Right", 10 }),
+	},
 
-    -- Ctrl-a = -> restore evenly balanced pane sizes
-    {
-        key = "=",
-        mods = "LEADER",
-        action = wezterm.action_callback(reset_pane_sizes),
-    },
+	-- Ctrl-a = -> restore evenly balanced pane sizes
+	{
+		key = "=",
+		mods = "LEADER",
+		action = wezterm.action_callback(reset_pane_sizes),
+	},
 
-    -- ------------------------------------------------
-    -- Pane management
-    -- ------------------------------------------------
+	-- ------------------------------------------------
+	-- Pane management
+	-- ------------------------------------------------
 
-    -- Zoom/unzoom current pane
-    {
-        key = "z",
-        mods = "LEADER",
-        action = act.TogglePaneZoomState,
-    },
+	-- Zoom/unzoom current pane
+	{
+		key = "z",
+		mods = "LEADER",
+		action = act.TogglePaneZoomState,
+	},
 
-    -- Close pane
-    {
-        key = "q",
-        mods = "LEADER",
-        action = act.CloseCurrentPane {
-            confirm = false,
-        },
-    },
+	-- Close pane
+	{
+		key = "q",
+		mods = "LEADER",
+		action = act.CloseCurrentPane({
+			confirm = false,
+		}),
+	},
 
-    -- Pick a pane visually
-    {
-        key = "x",
-        mods = "LEADER",
-        action = act.PaneSelect,
-    },
+	-- Pick a pane visually
+	{
+		key = "x",
+		mods = "LEADER",
+		action = act.PaneSelect,
+	},
 
-    -- ------------------------------------------------
-    -- Tabs
-    -- ------------------------------------------------
+	-- ------------------------------------------------
+	-- Tabs
+	-- ------------------------------------------------
 
-    -- New tab in the active pane's current directory
-    {
-        key = "c",
-        mods = "LEADER",
-        action = spawn_tab_in_current_directory,
-    },
-    {
-        key = "t",
-        mods = "CTRL|SHIFT",
-        action = spawn_tab_in_current_directory,
-    },
+	-- New tab in the active pane's current directory
+	{
+		key = "c",
+		mods = "LEADER",
+		action = spawn_tab_in_current_directory,
+	},
+	{
+		key = "t",
+		mods = "CTRL|SHIFT",
+		action = spawn_tab_in_current_directory,
+	},
 
-    -- Next / previous tab
-    {
-        key = "n",
-        mods = "LEADER",
-        action = act.ActivateTabRelative(1),
-    },
-    {
-        key = "p",
-        mods = "LEADER",
-        action = act.ActivateTabRelative(-1),
-    },
+	-- Next / previous tab
+	{
+		key = "n",
+		mods = "LEADER",
+		action = act.ActivateTabRelative(1),
+	},
+	{
+		key = "p",
+		mods = "LEADER",
+		action = act.ActivateTabRelative(-1),
+	},
 
-    -- ------------------------------------------------
-    -- Copy mode
-    -- ------------------------------------------------
+	-- ------------------------------------------------
+	-- Copy mode
+	-- ------------------------------------------------
 
-    -- Enter terminal copy mode
-    {
-        key = "[",
-        mods = "LEADER",
-        action = act.ActivateCopyMode,
-    },
+	-- Enter terminal copy mode
+	{
+		key = "[",
+		mods = "LEADER",
+		action = act.ActivateCopyMode,
+	},
 }
 
 -- Ctrl-a 1..9 -> tab 1..9
 for i = 1, 9 do
-    table.insert(config.keys, {
-        key = tostring(i),
-        mods = "LEADER",
-        action = act.ActivateTab(i - 1),
-    })
+	table.insert(config.keys, {
+		key = tostring(i),
+		mods = "LEADER",
+		action = act.ActivateTab(i - 1),
+	})
 end
 
 return config

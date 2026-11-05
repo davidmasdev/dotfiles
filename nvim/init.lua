@@ -174,18 +174,17 @@ require("lazy").setup({
             end,
         },
         {
-            "miikanissi/modus-themes.nvim",
+            "gbprod/nord.nvim",
             lazy = false,
             priority = 1000,
             config = function()
-                require("modus-themes").setup({
-                    style = "modus_vivendi",
+                require("nord").setup({
                     styles = {
                         comments = { italic = false },
                         keywords = { italic = false },
                     },
                 })
-                vim.cmd.colorscheme("modus_vivendi")
+                vim.cmd.colorscheme("nord")
             end,
         },
         {
@@ -421,7 +420,7 @@ require("lazy").setup({
         },
     },
     -- Colorscheme
-    install = { colorscheme = { "modus_vivendi" } },
+    install = { colorscheme = { "nord" } },
     -- do not automatically check for plugin updates
     checker = { enabled = false },
     rocks = { enabled = false },
