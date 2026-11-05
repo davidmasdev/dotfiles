@@ -1,0 +1,47 @@
+[general]
+working_directory = 'C:\Users\david'
+
+[env]
+MSYSTEM = "MINGW64"
+CHERE_INVOKING = "1"
+
+[terminal.shell]
+program = 'C:\Program Files\Git\usr\bin\bash.exe'
+args = ["--login", "-i"]
+
+[font]
+size = 14
+normal = { family = "Iosevka NF", style = "Regular" }
+
+# Naysayer theme (Jonathan Blow's Emacs colors)
+[colors.primary]
+background = "#062329"
+foreground = "#d1b897"
+
+[colors.cursor]
+text = "#062329"
+cursor = "#90ee90"
+
+[colors.selection]
+text = "#ffffff"
+background = "#0000ff"
+
+[colors.normal]
+black   = "#0b3335"
+red     = "#ff0000"
+green   = "#44b340"
+yellow  = "#ffaa00"
+blue    = "#7ad0c6"
+magenta = "#c1d1e3"
+cyan    = "#2ec09c"
+white   = "#d1b897"
+
+[colors.bright]
+black   = "#126367"
+red     = "#ff5555"
+green   = "#8cde94"
+yellow  = "#ffcc66"
+blue    = "#9fe0d8"
+magenta = "#e0e8f1"
+cyan    = "#5fd4b4"
+white   = "#ffffff"
